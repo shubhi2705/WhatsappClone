@@ -1,0 +1,21 @@
+*{
+  margin: 0; 
+   overflow: hidden
+}
+
+.app{
+  display: flex;
+  justify-content: space-between;
+  place-content: center;
+  height:120vh;
+  background-color: #dadbd3;
+}
+.app__body{
+  display: flex;
+  justify-content: space-between;
+  background-color: #ededed;
+  width: 80%;
+  height:80%;
+  margin-top:10px;
+  box-shadow: -1px 4px 20px -6px rgba(0,0,0,257);
+}

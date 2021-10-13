@@ -2,6 +2,8 @@
     padding:20px;
     display: flex;
     align-items: center;
+    cursor: pointer;
+    border-bottom: 1px solid #f6f6f6;
 }
 
 .sidebar_chats:hover{

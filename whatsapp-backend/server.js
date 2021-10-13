@@ -1,9 +1,8 @@
 import express, { application } from 'express';
 import mongoose from 'mongoose';
 import Messages from './DbMessages.js';
+import ChatRoom from './ChatRoom.js';
 import Pusher from 'pusher';
-
-// console.log("Credes",process.env.cred)
 
 const app=express();
 const port=process.env.PORT || 9000;
@@ -26,17 +25,33 @@ const db=mongoose.connection;
 db.once("open",()=>{
     console.log('DB Connected');
     const msgCollection=db.collection('messagecontents');
-    const changeStream=msgCollection.watch();
-    changeStream.on("change",(change)=>{
+    const roomCollection=db.collection('chatrooms');
+    const changeStreamMsg=msgCollection.watch();
+    const changeStreamRooms=roomCollection.watch();
+    changeStreamMsg.on("change",(change)=>{
         console.log(change)
         if(change.operationType==='insert'){
             console.log("Inside insert")
             const messageDetails=change.fullDocument;
             pusher.trigger('messages','inserted',{
-                user:messageDetails.user,
+                name:messageDetails.name,
                 message:messageDetails.message,
                 timeStamp:messageDetails.timeStamp,
                 received:messageDetails.received
+            })
+        }
+        else{
+            console.log("Error Triggring Pusher")
+        }
+    })
+    changeStreamRooms.on("change",(change)=>{
+        console.log(change)
+        if(change.operationType==='insert'){
+            console.log("Inside insert")
+            const messageDetails=change.fullDocument;
+            pusher.trigger('chatrooms','inserted',{
+                name:messageDetails.name,
+                message:messageDetails.message,
             })
         }
         else{
@@ -50,7 +65,7 @@ app.listen(port,()=>{console.log(`Listening on ${port}`)})
 
 
 //middleware
-app.use(express.json()) 
+app.use(express.json("application-json")) 
 app.use((req,res,next)=>{
     res.setHeader("Access-Control-Allow-Origin","*");
     res.setHeader("Access-Control-Allow-Headers","*");
@@ -59,16 +74,16 @@ app.use((req,res,next)=>{
 
 
 //api routes
-app.get('/',(req,res)=>{res.status(200).send('Hello world')});
+app.get('/',(req,res)=>{res.status(200).send('')});
 
 app.get('/messages/sync',(req,res)=>{
     Messages.find((err,data)=>{
         if(err){
             console.log(err)
-            res.status(500).send(err);
+            res.status(500).json(err);
         }
         else{
-            res.status(200).send(`New Message Created:\n${data}`)
+            res.status(200).json(data);
         }
     })
 })
@@ -79,11 +94,36 @@ app.post('/messages/new',(req,res)=>{
     Messages.create(dbMessage,(err,data)=>{
         if(err){
             console.log(err)
-            res.status(500).send(err);
+            res.status(500).json(err);
         }
         else{
-            res.status(201).send(`New Message Created:\n${data}`)
+            res.status(201).json(data)
+        }
+    })  
+})
+app.get('/chatroom/all',(req,res)=>{
+    ChatRoom.find((err,data)=>{
+        if(err){
+            console.log(err)
+            res.status(500).json(err);
+        }
+        else{
+            res.status(200).json(data);
         }
     })
-    
+})
+
+app.post('/chatroom/new',(req,res)=>{
+    const room=req.body;
+    ChatRoom.create(room,(err,data)=>{
+        if(err)
+        {
+            console.log(err);
+            res.status(500).json(err);
+        }
+        else{
+            res.status(200).json(data);
+        }
+
+    })
 })

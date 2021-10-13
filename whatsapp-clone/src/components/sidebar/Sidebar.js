@@ -4,11 +4,13 @@ import { Avatar, IconButton } from '@material-ui/core';
 import './sidebar.css'
 import { SidebarChat } from '../sidebarChat/SidebarChat';
 
-const Sidebar = () => {
+const Sidebar = ({rooms}) => {
+
     return (
         <div className='sidebar'>
             <div className='sidebar_header'>
-                <Avatar className='sidebar_avatar'/>
+                <Avatar src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRW6X2lldt_gy2tcbXCKBbKWNVBpH-f1Mcjsw&usqp=CAU' className='sidebar_avatar' id="sidebarAvatar"
+                />
                <div className='sidebar_headerRight'>
                <IconButton >
                    <DonutLarge />
@@ -31,15 +33,11 @@ const Sidebar = () => {
 
             </div>
            <div className='sidebar_chat'>
-             <SidebarChat />
-             <SidebarChat />
-             <SidebarChat />
-             <SidebarChat />
-             <SidebarChat />
-             <SidebarChat />
-             <SidebarChat />
-             <SidebarChat />
-             <SidebarChat />
+               <SidebarChat addNewChat />
+               {rooms.map((room,i)=>(
+                   <SidebarChat room={room} key={i} />
+               ))}
+               
            </div>
        
         </div>

@@ -60,6 +60,11 @@ db.once("open",()=>{
     })
 })
 
+
+if(process.env.NODE_ENV=='production'){
+    app.use(express.static("client/build"));
+}
+
 //port config
 app.listen(port,()=>{console.log(`Listening on ${port}`)})
 

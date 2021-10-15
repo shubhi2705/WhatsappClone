@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import Messages from './DbMessages.js';
 import ChatRoom from './ChatRoom.js';
 import Pusher from 'pusher';
+import cors from 'cors';
 
 const app=express();
 const port=process.env.PORT || 9000;
@@ -66,16 +67,16 @@ if(process.env.NODE_ENV=='production'){
 }
 
 //port config
-app.listen(port,()=>{console.log(`Listening on ${port}`)})
+const server=app.listen(port,()=>{
+    const port=server.address().port;
+    console.log(`Listening on ${port}`)})
 
 
 //middleware
 app.use(express.json("application-json")) 
-app.use((req,res,next)=>{
-    res.setHeader("Access-Control-Allow-Origin","*");
-    res.setHeader("Access-Control-Allow-Headers","*");
-    next();
-}) ///need to read this ,we are passing the request in the form of json and to read that json we need middleware
+app.use(cors({
+    origin: '*'
+}));///need to read this ,we are passing the request in the form of json and to read that json we need middleware
 
 
 //api routes

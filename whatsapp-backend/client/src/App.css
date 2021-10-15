@@ -13,6 +13,7 @@
 .app__body{
   display: flex;
   justify-content: space-between;
+  /* place-content: center; */
   background-color: #ededed;
   width: 80%;
   height:80%;
